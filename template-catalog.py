@@ -9,6 +9,10 @@
 
 """
 
+# TODO: improve handling of comments in the templates
+# TODO: Add code for recursive tree of calls for each template
+# TODO: Add counts for calls for each template
+
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright (c) 2017 Michael Conlon"
 __license__ = "Apache-2 license"
@@ -27,6 +31,27 @@ def file_len(fname):
     return i + 1
 
 
+def file_calls(fname):
+    """
+    Determine the templates called by this template
+    :param fname:
+    :return:
+    """
+    calls = set()
+    with open(fname) as f:
+        for i, l in enumerate(f):
+            if '<#--' in l:
+                continue
+            if '.ftl' in l:
+                end = l.find('.ftl')
+                search = l[0:end+4][::-1]
+                start = search.find('"')
+                name = search[0:start][::-1]
+                if name not in calls:
+                    calls.add(name)
+    return calls
+
+
 def main():
     """
     The main function.  Does the work
@@ -40,7 +65,8 @@ def main():
     for directory, subdirectories, files in os.walk(root_dir):
         for file_name in files:
             if file_name.endswith('.ftl'):
-                print file_len(os.path.join(directory, file_name)), file_name
+                path_name = os.path.join(directory, file_name)
+                print file_len(path_name), file_name, file_calls(path_name)
                 count += 1
 
     print "\n", count, "templates"
