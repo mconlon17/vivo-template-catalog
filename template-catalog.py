@@ -16,7 +16,7 @@
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright (c) 2017 Michael Conlon"
 __license__ = "Apache-2 license"
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 
 
 def file_len(fname):
