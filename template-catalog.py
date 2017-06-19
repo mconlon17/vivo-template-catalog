@@ -21,12 +21,15 @@
 
 """
 
-# TODO: To count VIVO, process Vitro and then VIVO.  Add then templates
+# TODO: Confirm template processing order
+# TODO: Put tree structure in the data structure
+# TODO: More testing
+# TODO: Decide and implement output format -- Markdown, HTML, JSON, multiple, other
 
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright (c) 2017 Michael Conlon"
 __license__ = "Apache-2 license"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 
 def file_len(fname):
