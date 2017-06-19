@@ -7,6 +7,18 @@
     VIVO and Vitro use Freemarker templates (a lot of them!) to create the user interface. It is difficult for anyone
     to know which templates do what and where things might be in the templates.
 
+    Usage:
+
+    template-catalog [theme]
+
+    If theme starts with a v it is assumed to be a vitro theme and the "v" is removed.
+
+    For vitro themes, the vitro templates are processed, then the vitro theme templates
+
+    For VIVO themes, the vitro templates are processed, then the VIVO templates, then the vivo theme templates
+
+    The default theme is wilma
+
 """
 
 # TODO: To count VIVO, process Vitro and then VIVO.  Add then templates
@@ -115,23 +127,20 @@ def file_has_text(fname):
     return has_text
 
 
-def main():
+def process_path(ftl, path):
     """
-    The main function.  Does the work
+    Given a path, process all the directories and files in the path looking for Freemarker templates.
+    For each template, compute templates stats
+    :param path:
     :return: None
     """
     import os
 
-    root_dir = '/Users/mikeconlon/PycharmProjects/Vitro/webapp/src'
-    count = 0
-    ftl = {}
-
-    for directory, subdirectories, files in os.walk(root_dir):
+    for directory, subdirectories, files in os.walk(path):
         for file_name in files:
             if file_name.endswith('.ftl'):
                 path_name = os.path.join(directory, file_name)
                 calls = file_calls(path_name)
-                count += 1
                 ftl[file_name] = {}
                 ftl[file_name]['lines'] = file_len(path_name)
                 ftl[file_name]['path'] = path_name
@@ -141,11 +150,41 @@ def main():
                 ftl[file_name]['has_text'] = file_has_text(path_name)
                 ftl[file_name]['i18n'] = file_count_i18n(path_name)
 
+
+def main():
+    """
+    The main function.  Does the work
+    :return: None
+    """
+
+    import sys
+
+    ftl = {}  # structure to contain template info, keyed by template file_name
+
+    if len(sys.argv) == 1:
+        theme = "vvitro"
+    else:
+        theme = sys.argv[1]
+
+    root_dir = '/Users/mikeconlon/PycharmProjects/'
+    vitro_dir = 'Vitro/webapp/src'
+    vivo_dir = 'VIVO/webapp/src'
+
+    if theme[0] == 'v':
+        theme_dir = 'Vitro/webapp/src/main/webapp/themes/' + theme[1:]
+        process_path(ftl, root_dir+vitro_dir)
+        process_path(ftl, root_dir+theme_dir)
+    else:
+        theme_dir = 'VIVO/webapp/src/main/webapp/themes/' + theme
+        process_path(ftl, root_dir+vitro_dir)
+        process_path(ftl, root_dir+vivo_dir)
+        process_path(ftl, root_dir+theme_dir)
+
     for file_name in ftl:
         for name in ftl[file_name]['calls']:
             ftl[name]['called'] += 1
 
-    print "\n", count, "templates"
+    print "\n", len(ftl), "templates for theme", theme
     for name in ftl:
         print name, 'has text = ', ftl[name]['has_text'], 'i18n count =', ftl[name]['i18n'], 'lines =', \
             ftl[name]['lines']

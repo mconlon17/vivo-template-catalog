@@ -13,9 +13,17 @@ Getting started to produce a catalog of templates for Vitro and VIVO.
     1. called -- how many times is the template called.  Helps us find important templates, and templates we might be able to remove
     1. calls -- how many calls does the template make to other templates
     
-## To do
+## Running template-catalog
 
-Process the templates as in the running system:
+    > python template-catalog.py [theme]
 
-    * if vitro theme, process the vito templates, then process the vitro theme templates
-    * if vivo theme, process vitro, then vivo, then vivo theme
+If theme starts with a v it is assumed to be a vitro theme and the "v" is removed.  So to process the vitro theme, 
+use vvitro.  The default theme is wilma.
+
+For Vitro themes, the Vitro templates are processed, then the Vitro theme templates, overriding any Vitro templates 
+with the same name.
+
+For VIVO themes, the Vitro templates are processed, then the VIVO templates overriding any Vitro templates
+of the same name, then the VIVO theme templates are processed, overriding any VIVO or Vitro templates of the
+same name.
+
