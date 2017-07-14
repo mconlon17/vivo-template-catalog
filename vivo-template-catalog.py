@@ -29,7 +29,7 @@
 __author__ = "Michael Conlon"
 __copyright__ = "Copyright (c) 2017 Michael Conlon"
 __license__ = "Apache-2 license"
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 
 def file_len(fname):
@@ -245,12 +245,12 @@ def main():
             ftl[name]['lines']
         file_tree(ftl, name)
 
-    print "\n\n", len(tags), "tags used in theme", theme
+    print "\n\n", len(tags), "tags used in theme", theme, "template tag listing"
     for name in sorted(ftl):
         for tag in sorted(ftl[name]['tags']):
             print name, "\t", tag
 
-    print "\n\n", len(tags), "tags used in theme", theme
+    print "\n\n", len(tags), "tags used in theme", theme, "tag template listing"
     for tag in sorted(tags):
         for name in tags[tag]['templates']:
             print tag, "\t", name
