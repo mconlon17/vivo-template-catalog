@@ -98,6 +98,38 @@ def file_calls(fname):
     return calls
 
 
+def file_tags(fname):
+    """
+    Determine the tags used by this template
+    :param fname:
+    :return:
+    """
+    import re
+    tags = set()
+    with open(fname) as f:
+        skip = False
+        for i, l in enumerate(f):
+            if '<#--' in l or '<!--' in l or '<script' in l:
+                skip = True
+            match = re.search(r'<#[a-z]', l)
+            if match:
+                continue
+            if '<@' in l:
+                continue
+            if '-->' in l or '</script>' in l:
+                skip = False
+                continue
+            if skip:
+                continue
+
+            match = re.findall(r'\${([A-Za-z0-9_\(\)\$@\-\.:]*?)}', l)  # match var names and i18()
+ #          match = re.findall(r'\${([A-Za-z0-9_\$@\-\.:]*?)}', l)  # match Freemarker variable names
+ #          match = re.findall(r'\${(.*?)}', l)  # general match for substitution patterns
+            for m in match:
+                tags.add(m)
+    return tags
+
+
 def file_has_text(fname):
     """
     Determine the templates called by this template
@@ -152,6 +184,24 @@ def process_path(ftl, path):
                 ftl[file_name]['called'] = 0
                 ftl[file_name]['has_text'] = file_has_text(path_name)
                 ftl[file_name]['i18n'] = file_count_i18n(path_name)
+                ftl[file_name]['tags'] = file_tags(path_name)
+
+
+def tag_usage(ftl):
+    """
+    Given the ftl structure, create a tags structure keyed on tag with a set of templates that use the tag
+    :param ftl:
+    :return:
+    """
+    tags = {}
+    for name in ftl:
+        for tag in ftl[name]['tags']:
+            if tag in tags:
+                tags[tag]['templates'].add(name)
+            else:
+                tags[tag] = {}
+                tags[tag]['templates'] = {name}
+    return tags
 
 
 def main():
@@ -187,11 +237,23 @@ def main():
         for name in ftl[file_name]['calls']:
             ftl[name]['called'] += 1
 
-    print "\n", len(ftl), "templates for theme", theme
-    for name in ftl:
+    tags = tag_usage(ftl)
+
+    print "\n\n", len(ftl), "templates for theme", theme
+    for name in sorted(ftl):
         print name, 'has text = ', ftl[name]['has_text'], 'i18n count =', ftl[name]['i18n'], 'lines =', \
             ftl[name]['lines']
         file_tree(ftl, name)
+
+    print "\n\n", len(tags), "tags used in theme", theme
+    for name in sorted(ftl):
+        for tag in sorted(ftl[name]['tags']):
+            print name, "\t", tag
+
+    print "\n\n", len(tags), "tags used in theme", theme
+    for tag in sorted(tags):
+        for name in tags[tag]['templates']:
+            print tag, "\t", name
 
 if __name__ == "__main__":
     main()

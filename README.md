@@ -11,7 +11,9 @@ Getting started to produce a catalog of templates for Vitro and VIVO.
     1. language --- an attempt to discern if the template contains hard coded language, or appears to be i18n clean
     1. i18n count -- how many times does the template refer to i18n.  Helps with translation
     1. called -- how many times is the template called.  Helps us find important templates, and templates we might be able to remove
-    1. calls -- how many calls does the template make to other templates
+    1. ncalls -- number of calls to other templates made by this template
+    1. calls -- set of templates called by the template
+    1. tags -- set of tags used by the template
     
 ## Running template-catalog
 
@@ -26,4 +28,11 @@ with the same name.
 For VIVO themes, the Vitro templates are processed, then the VIVO templates overriding any Vitro templates
 of the same name, then the VIVO theme templates are processed, overriding any VIVO or Vitro templates of the
 same name.
+
+## Outputs
+
+1. For each template, the information described above
+1. A tab separated list of template and tag -- one line for each template/tag combination, sorted by template, then tag
+1. A tab separated list of tag and template -- one line for each tag/template combination, sorted by tag, then template
+
 
